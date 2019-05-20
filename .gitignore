@@ -65,4 +65,4 @@ profile
 *.mobileprovision
 
 # AppCode
-.idea
+.vscode/
