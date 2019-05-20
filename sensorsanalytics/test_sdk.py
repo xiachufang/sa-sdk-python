@@ -1,10 +1,10 @@
 # coding=utf-8
 
 from __future__ import unicode_literals
+
 import unittest
 
 from sdk import *
-
 
 TEST_URL_PREFIX = 'http://10.10.11.209:8006/sa?token=bbb'
 TEST_DEBUG_URL_PREFIX = 'http://10.10.11.209:8006/debug?token=bbb'
@@ -83,38 +83,43 @@ class NormalTest(unittest.TestCase):
         if hasattr(self, 'assertRaisesRegex'):
             assertRaisesRegex = self.assertRaisesRegex
         else:
-             assertRaisesRegex = self.assertRaisesRegexp
+            assertRaisesRegex = self.assertRaisesRegexp
 
-        assertRaisesRegex(SensorsAnalyticsIllegalDataException, "property \[distinct_id\] must not be empty", sa.track, None,
-                               'Test', {'From': 'Baidu'})
-        assertRaisesRegex(SensorsAnalyticsIllegalDataException, "the max length of property \[distinct_id\] is 255", sa.track, 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz',
-                               'Test', {'From': 'Baidu'})
+        assertRaisesRegex(SensorsAnalyticsIllegalDataException, "property \[distinct_id\] must not be empty", sa.track,
+                          None,
+                          'Test', {'From': 'Baidu'})
+        assertRaisesRegex(SensorsAnalyticsIllegalDataException, "the max length of property \[distinct_id\] is 255",
+                          sa.track,
+                          'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz',
+                          'Test', {'From': 'Baidu'})
         assertRaisesRegex(SensorsAnalyticsIllegalDataException, ".*must be a timestamp in microseconds.*",
-                               sa.track, 1234, 'Test', {'From': 'Baidu', '$time': 1234})
+                          sa.track, 1234, 'Test', {'From': 'Baidu', '$time': 1234})
         assertRaisesRegex(SensorsAnalyticsIllegalDataException, ".*property key must be a valid variable name.*",
-                               sa.track, 1234, 'Test', {'From ad': 'Baidu'})
+                          sa.track, 1234, 'Test', {'From ad': 'Baidu'})
         assertRaisesRegex(SensorsAnalyticsIllegalDataException, ".*property key must be a str.*",
-                               sa.track, 1234, 'Test', {123: 'Baidu'})
+                          sa.track, 1234, 'Test', {123: 'Baidu'})
         assertRaisesRegex(SensorsAnalyticsIllegalDataException, ".*event name must be a valid variable nam.*",
-                               sa.track, 1234, 'Test 123', {123: 'Baidu'})
+                          sa.track, 1234, 'Test 123', {123: 'Baidu'})
         sa.track(1234, 'Tes123_$t', {'From': 'Baidu', '$time': '1437816376000', 'Test': 1437816376000999933})
         assertRaisesRegex(SensorsAnalyticsIllegalDataException, ".*property value must be a str.*",
-                               sa.track, 1234, 'TestEvent', {'TestProperty': {}})
+                          sa.track, 1234, 'TestEvent', {'TestProperty': {}})
         assertRaisesRegex(SensorsAnalyticsIllegalDataException, ".*property value must be a str.*",
-                               sa.track, 1234, 'TestEvent', {'TestProperty': consumer})
+                          sa.track, 1234, 'TestEvent', {'TestProperty': consumer})
         sa.profile_set(1234, {'From': 'Baidu'})
         assertRaisesRegex(SensorsAnalyticsIllegalDataException, ".*property value must be a str.*",
-                               sa.profile_set, 1234, {'TestProperty': {}})
+                          sa.profile_set, 1234, {'TestProperty': {}})
         assertRaisesRegex(SensorsAnalyticsIllegalDataException, ".*property's value must be a str.* ",
-                               sa.track, 1234, 'TestEvent', {'TestProperty': [123]})
+                          sa.track, 1234, 'TestEvent', {'TestProperty': [123]})
         sa.profile_set(1234, {'From': 'Baidu', 'asd': ["asd", "bbb"]})
         # 'distinct_id' is reserved keyword
         assertRaisesRegex(SensorsAnalyticsIllegalDataException, ".*property key must be a valid variable nam.*",
-                               sa.track, 1234, 'TestEvent', {'distincT_id': 'a'})
+                          sa.track, 1234, 'TestEvent', {'distincT_id': 'a'})
         # max length is 100
         assertRaisesRegex(SensorsAnalyticsIllegalDataException, ".*property key must be a valid variable nam.*",
-                               sa.track, 1234, 'TestEvent', {'a123456789a123456789a123456789a123456789a123456789a123456789a123456789a123456789a123456789a1234567891': 'a'})
-        sa.track(1234, 'TestEvent', {'a123456789a123456789a123456789a123456789a123456789a123456789a123456789a123456789a123456789a123456789': 'a'})
+                          sa.track, 1234, 'TestEvent', {
+                              'a123456789a123456789a123456789a123456789a123456789a123456789a123456789a123456789a123456789a1234567891': 'a'})
+        sa.track(1234, 'TestEvent', {
+            'a123456789a123456789a123456789a123456789a123456789a123456789a123456789a123456789a123456789a123456789': 'a'})
 
     def testDefaultConsumer(self):
         consumer = DefaultConsumer(TEST_URL_PREFIX)
