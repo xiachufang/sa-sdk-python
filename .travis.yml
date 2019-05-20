@@ -17,5 +17,5 @@ deploy:
   server: https://pypi.xiachufang.com
   distributions: sdist bdist_wheel
   on:
-    repo: xiachufang/sensorsanalytics
+    repo: xiachufang/sa-sdk-python
     branch: master
