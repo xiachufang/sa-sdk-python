@@ -20,4 +20,5 @@ deploy:
     repo: xiachufang/sa-sdk-python
     branch: master
     python: '2.7'
+    skip_existing: true
 
