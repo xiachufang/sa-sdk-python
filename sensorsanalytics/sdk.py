@@ -26,6 +26,7 @@ except ImportError:
     import urllib
 
 SDK_VERSION = '1.10.4+xiachufang'
+SDK_VERSION = '1.10.5+xiachufang'
 
 try:
     isinstance("", basestring)
@@ -62,7 +63,6 @@ class SensorsAnalyticsNetworkException(SensorsAnalyticsException):
     """
     在因为网络或者不可预知的问题导致数据无法发送时，SDK会抛出此异常，用户应当捕获并处理。
     """
-    pass
 
 
 class SensorsAnalyticsFileLockException(SensorsAnalyticsException):
@@ -580,7 +580,10 @@ class DefaultConsumer(object):
                 content = e.read().decode('utf8')
             except:
                 content = ''
-            raise SensorsAnalyticsNetworkException(e, content)
+            if str(e.code) == '400':
+                raise SensorsAnalyticsIllegalDataException(content)
+
+            raise SensorsAnalyticsNetworkException(str(e), content)
         return True
 
     def send(self, msg):
@@ -677,10 +680,16 @@ class AsyncBatchConsumer(DefaultConsumer):
                 self._consumer.need_flush.wait(self._consumer.flush_max_time)
                 # 进行发送，如果成功则清除标志位
                 try:
-                    if self._consumer.sync_flush():
-                        self._consumer.need_flush.clear()
-                except:
+                    sync_success = self._consumer.sync_flush()
+                except SensorsAnalyticsIllegalDataException:
+                    sync_success = True
                     self.logger.exception("sync_flush error")
+                except:
+                    sync_success = False
+                    self.logger.exception("sync_flush error")
+
+                if sync_success:
+                    self._consumer.need_flush.clear()
 
                 # 发现 stop 标志位时安全退出
                 if self._stop_event.isSet():
@@ -750,7 +759,7 @@ class AsyncBatchConsumer(DefaultConsumer):
                 })
                 flush_success = True
                 self._flush_buffer = []
-            except SensorsAnalyticsNetworkException as e:
+            except SensorsAnalyticsIllegalDataException as e:
                 flush_success = True
                 self._flush_buffer = []
 
