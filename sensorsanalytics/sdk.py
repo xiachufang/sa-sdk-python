@@ -25,7 +25,6 @@ except ImportError:
     import urllib2
     import urllib
 
-SDK_VERSION = '1.10.4+xiachufang'
 SDK_VERSION = '1.10.5+xiachufang'
 
 try:
