@@ -1,4 +1,4 @@
-# Sensors Analytics
+# Sensors Analytics[![Build Status](https://travis-ci.com/xiachufang/sa-sdk-python.svg?branch=master)](https://travis-ci.com/xiachufang/sa-sdk-python)
 
 This is the official Python SDK for Sensors Analytics.
 

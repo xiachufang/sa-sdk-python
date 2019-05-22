@@ -19,3 +19,5 @@ deploy:
   on:
     repo: xiachufang/sa-sdk-python
     branch: master
+    python: '2.7'
+
