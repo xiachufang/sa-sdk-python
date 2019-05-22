@@ -25,7 +25,7 @@ except ImportError:
     import urllib2
     import urllib
 
-SDK_VERSION = '1.10.2'
+SDK_VERSION = '1.10.3+xiachufang'
 
 try:
     isinstance("", basestring)
@@ -751,8 +751,14 @@ class AsyncBatchConsumer(DefaultConsumer):
                 flush_success = True
                 self._flush_buffer = []
             except SensorsAnalytics as e:
+                flush_success = True
+                self._flush_buffer = []
+
                 if throw_exception:
                     raise e
+            except:
+                raise
+
         return flush_success
 
     def close(self):
