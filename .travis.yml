@@ -7,6 +7,8 @@ python:
 - '3.7'
 install:
   - echo ok
+script:
+  - python sensorsanalytics/test_sdk.py
 deploy:
   provider: pypi
   user: sensorsanalytics
