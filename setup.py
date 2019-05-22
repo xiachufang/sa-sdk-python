@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='SensorsAnalyticsSDK',
-    version='1.10.1+xiachufang',
+    version='1.10.2+xiachufang',
     author='Yuhan ZOU',
     author_email='zouyuhan@sensorsdata.cn',
     url='http://www.sensorsdata.cn',

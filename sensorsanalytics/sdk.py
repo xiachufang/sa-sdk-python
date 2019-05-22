@@ -25,7 +25,7 @@ except ImportError:
     import urllib2
     import urllib
 
-SDK_VERSION = '1.10.1'
+SDK_VERSION = '1.10.2'
 
 try:
     isinstance("", basestring)
@@ -576,7 +576,11 @@ class DefaultConsumer(object):
             else:
                 urllib2.urlopen(request)
         except urllib2.HTTPError as e:
-            raise SensorsAnalyticsNetworkException(e)
+            try:
+                content = e.read().decode('utf8')
+            except:
+                content = ''
+            raise SensorsAnalyticsNetworkException(e, content)
         return True
 
     def send(self, msg):
@@ -675,8 +679,8 @@ class AsyncBatchConsumer(DefaultConsumer):
                 try:
                     if self._consumer.sync_flush():
                         self._consumer.need_flush.clear()
-                except Exception as e:
-                    self.logger.exception("sync_flush")
+                except:
+                    self.logger.exception("sync_flush error")
 
                 # 发现 stop 标志位时安全退出
                 if self._stop_event.isSet():
@@ -805,28 +809,31 @@ class DebugConsumer(object):
             if not self._debug_write_data:  # 说明只检查,不真正写入数据
                 request.add_header('Dry-Run', 'true')
             if self._request_timeout is not None:
-                response = urllib2.urlopen(request, timeout=self._request_timeout)
+                urllib2.urlopen(request, timeout=self._request_timeout)
             else:
-                response = urllib2.urlopen(request)
+                urllib2.urlopen(request)
         except urllib2.HTTPError as e:
-            return e
-        return response
+            if e.code >= 300:
+                raise SensorsAnalyticsDebugException()
+
+            try:
+                content = e.read().decode('utf8')
+            except:
+                content = ''
+            raise SensorsAnalyticsNetworkException(e, content)
 
     def send(self, msg):
-        response = self._do_request({
-            'data': self._encode_msg(msg),
-            'gzip': 1
-        })
         print('==========================================================================')
-        ret_code = response.code
-        if ret_code == 200:
+        try:
+            self._do_request({
+                'data': self._encode_msg(msg),
+                'gzip': 1
+            })
+
             print('valid message: %s' % msg)
-        else:
+        except SensorsAnalyticsNetworkException as e:
             print('invalid message: %s' % msg)
-            print('ret_code: %s' % ret_code)
-            print('ret_content: %s' % response.read().decode('utf8'))
-        if ret_code >= 300:
-            raise SensorsAnalyticsDebugException()
+            print('ret_content: %s' % e)
 
     def _encode_msg(self, msg):
         return base64.b64encode(self._gzip_string(msg.encode('utf8')))
