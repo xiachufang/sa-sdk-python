@@ -10,6 +10,7 @@ import logging
 import logging.handlers
 import os
 import re
+import random
 import threading
 import time
 import traceback
@@ -477,6 +478,7 @@ class SensorsAnalytics(object):
             'lib': self._get_lib_properties(),
             'item_type': item_type,
             'item_id': item_id,
+            '_track_id': random.randint(0, 0x7fffffff),
         }
 
         if self._default_project_name is not None:
@@ -501,6 +503,7 @@ class SensorsAnalytics(object):
             'distinct_id': distinct_id,
             'properties': properties,
             'lib': self._get_lib_properties(),
+            '_track_id': random.randint(0, 0x7fffffff),
         }
         if self._default_project_name is not None:
             data['project'] = self._default_project_name
